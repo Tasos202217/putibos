@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ПУТИН OS 24.0 — Единственная Правильная Операционная Система</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#cc0000;--dred:#8b0000;--gold:#ffd700;--dgold:#b8860b;
+  --bg:#07070f;--bg2:#0d0d1a;--bg3:#111120;
+  --text:#e8e0d0;--muted:#6a6050;--green:#4caf50;
+  --sf:#ff6600;--mega:#d9272e;--cyan:#00e5ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'PT Serif',serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--red),var(--gold));border-radius:3px}
+
+/* ══════════════ CUSTOM CURSOR ══════════════ */
+*{cursor:none!important}
+#cur{position:fixed;width:12px;height:12px;border-radius:50%;background:var(--red);pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .15s,height .15s,background .15s;mix-blend-mode:screen}
+#cur2{position:fixed;width:36px;height:36px;border-radius:50%;border:1px solid rgba(204,0,0,0.4);pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:all .08s ease;mix-blend-mode:screen}
+body:hover #cur{background:var(--gold)}
+
+/* ══════════════ MATRIX CANVAS ══════════════ */
+#matrix{position:fixed;inset:0;z-index:0;opacity:0.06;pointer-events:none}
+
+/* ══════════════ SCANLINES ══════════════ */
+.scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px)}
+
+/* ══════════════ FSB COOKIE BANNER ══════════════ */
+#fsb-banner{
+  position:fixed;bottom:0;left:0;right:0;z-index:9000;
+  background:linear-gradient(135deg,#0a0a14,#14000a);
+  border-top:3px solid var(--red);
+  padding:20px 48px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+  animation:slideUp .5s ease forwards;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+#fsb-banner.hidden{display:none}
+.fsb-banner-text{flex:1;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);line-height:1.7}
+.fsb-banner-text strong{color:var(--red)}
+.fsb-accept{background:var(--red);color:var(--gold);border:1px solid var(--gold);font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;padding:10px 24px;cursor:pointer;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+.fsb-accept:hover{background:var(--gold);color:var(--dred)}
+.fsb-decline{background:transparent;color:#333;border:1px solid #222;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;padding:10px 20px;cursor:pointer;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+.fsb-decline:hover{border-color:#555;color:#555}
+
+/* ══════════════ LOADER ══════════════ */
+#loader{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:10000;transition:opacity .8s,visibility .8s;
+}
+#loader.hide{opacity:0;visibility:hidden}
+.ld-bear{font-size:80px;animation:ldBear 1.5s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(204,0,0,0.6))}
+@keyframes ldBear{0%,100%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.1) rotate(5deg)}}
+.ld-title{font-family:'Oswald',sans-serif;font-size:32px;color:var(--gold);letter-spacing:6px;margin:16px 0 4px;text-shadow:0 0 30px rgba(255,215,0,0.4)}
+.ld-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:#444;letter-spacing:3px;margin-bottom:28px}
+.ld-bar-wrap{width:320px;height:2px;background:#111;position:relative;overflow:visible}
+.ld-bar{height:100%;background:linear-gradient(90deg,var(--red),var(--gold));width:0%;transition:width .1s;position:relative}
+.ld-bar::after{content:'';position:absolute;right:-1px;top:-4px;width:2px;height:10px;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+.ld-msg{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--gold);margin-top:16px;letter-spacing:2px;min-height:20px}
+.ld-dots{display:flex;gap:8px;margin-top:32px}
+.ld-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:ldDot 1.4s ease-in-out infinite}
+.ld-dot:nth-child(2){animation-delay:.2s;background:var(--gold)}
+.ld-dot:nth-child(3){animation-delay:.4s}
+@keyframes ldDot{0%,80%,100%{transform:scale(0.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* ══════════════ TICKER ══════════════ */
+.ticker{background:var(--gold);overflow:hidden;padding:6px 0;position:sticky;top:0;z-index:600}
+.ticker-track{display:flex;animation:tickMove 25s linear infinite;white-space:nowrap}
+@keyframes tickMove{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tick-item{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:3px;color:var(--dred);padding:0 24px;text-transform:uppercase}
+.tick-item span{color:#8b0000;opacity:.6}
+
+/* ══════════════ HEADER ══════════════ */
+header{
+  background:linear-gradient(135deg,#6b0000 0%,#cc0000 40%,#9b0000 70%,#6b0000 100%);
+  border-bottom:3px solid var(--gold);
+  position:sticky;top:20px;z-index:500;
+  box-shadow:0 4px 40px rgba(204,0,0,0.6),0 0 80px rgba(204,0,0,0.2);
+}
+header::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,215,0,0.02) 40px,rgba(255,215,0,0.02) 41px);pointer-events:none}
+nav{display:flex;align-items:center;justify-content:space-between;padding:12px 48px;flex-wrap:wrap;gap:12px;position:relative;z-index:1}
+.logo{display:flex;align-items:center;gap:14px;text-decoration:none;cursor:pointer}
+.logo-icon{width:54px;height:54px;background:radial-gradient(circle,#ffe44d,var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 0 0 rgba(255,215,0,0.4),inset 0 1px 0 rgba(255,255,255,0.2);animation:logoPulse 2.5s ease-in-out infinite}
+@keyframes logoPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.4)}50%{box-shadow:0 0 0 14px rgba(255,215,0,0),0 0 20px rgba(255,215,0,0.3)}}
+.logo-text h1{font-family:'Oswald',sans-serif;font-size:22px;color:var(--gold);letter-spacing:3px;text-shadow:0 2px 10px rgba(0,0,0,0.5)}
+.logo-text p{font-size:9px;color:#ffecb3;letter-spacing:2px;text-transform:uppercase;font-family:'Oswald',sans-serif;opacity:.8}
+.nav-links{display:flex;gap:2px;list-style:none;flex-wrap:wrap;align-items:center}
+.nav-links a{color:#ffecb3;text-decoration:none;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:7px 12px;border:1px solid transparent;transition:all .2s;position:relative;overflow:hidden}
+.nav-links a::before{content:'';position:absolute;inset:0;background:rgba(255,215,0,.08);transform:translateX(-100%);transition:transform .2s}
+.nav-links a:hover::before{transform:translateX(0)}
+.nav-links a:hover{color:var(--gold);border-color:rgba(255,215,0,.3)}
+.nav-dl{background:var(--gold)!important;color:var(--dred)!important;font-weight:700!important;border-color:var(--gold)!important;animation:dlPulse 2s ease-in-out infinite}
+@keyframes dlPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,.4)}50%{box-shadow:0 0 0 6px rgba(255,215,0,0)}}
+.nav-dl:hover{background:#fff!important;border-color:#fff!important}
+
+/* ══════════════ HERO ══════════════ */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;background:radial-gradient(ellipse at 60% 40%,rgba(204,0,0,0.12) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(255,215,0,0.04) 0%,transparent 50%),var(--bg)}
+.hero-grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(204,0,0,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(204,0,0,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+.hero-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(7,7,15,0.8) 100%);pointer-events:none}
+.hero-bg-word{position:absolute;font-family:'Oswald',sans-serif;font-size:22vw;font-weight:700;color:rgba(204,0,0,0.03);top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none;user-select:none;animation:bgWordFloat 10s ease-in-out infinite;letter-spacing:-4px}
+@keyframes bgWordFloat{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-52%) scale(1.015)}}
+.hero-content{position:relative;z-index:2;display:flex;align-items:center;gap:64px;padding:100px 64px;width:100%;flex-wrap:wrap}
+.hero-left{flex:1;min-width:320px}
+.version-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(204,0,0,0.1);border:1px solid rgba(204,0,0,0.3);color:var(--gold);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;padding:6px 14px;margin-bottom:24px;position:relative;overflow:hidden}
+.version-chip::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(204,0,0,0.1),transparent);animation:chipShimmer 3s ease-in-out infinite}
+@keyframes chipShimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#ff3333;flex-shrink:0;animation:livePulse 1s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,51,51,.4)}50%{opacity:.5;box-shadow:0 0 0 4px rgba(255,51,51,0)}}
+.hero-title{font-family:'Oswald',sans-serif;font-weight:700;line-height:.88;margin-bottom:20px}
+.ht-eyebrow{font-size:clamp(14px,2vw,22px);color:rgba(255,255,255,.5);letter-spacing:8px;display:block;margin-bottom:12px;font-weight:300}
+.ht-main{font-size:clamp(56px,9vw,110px);color:var(--gold);display:block;position:relative;text-shadow:0 0 60px rgba(255,215,0,.2)}
+.ht-main .glitch{position:relative;display:inline-block}
+.ht-main .glitch::before{content:attr(data-text);position:absolute;top:0;left:0;color:#ff0055;clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%);animation:glitchA 5s infinite steps(1);opacity:0}
+.ht-main .glitch::after{content:attr(data-text);position:absolute;top:0;left:0;color:#00e5ff;clip-path:polygon(0 60%,100% 60%,100% 75%,0 75%);animation:glitchB 5s infinite steps(1);opacity:0}
+@keyframes glitchA{0%,90%,100%{opacity:0;transform:none}91%{opacity:.8;transform:translateX(-4px)}93%{opacity:.8;transform:translateX(4px)}95%{opacity:0}}
+@keyframes glitchB{0%,92%,100%{opacity:0;transform:none}93%{opacity:.8;transform:translateX(4px)}95%{opacity:.8;transform:translateX(-4px)}97%{opacity:0}}
+.ht-sub{font-size:clamp(13px,1.5vw,18px);color:rgba(204,0,0,.8);letter-spacing:6px;display:block;margin-top:10px;font-weight:300}
+.hero-desc{font-size:15px;color:var(--muted);line-height:1.9;max-width:500px;margin:24px 0 36px;font-style:italic;border-left:2px solid var(--red);padding-left:20px;position:relative}
+.hero-desc::before{content:'';position:absolute;left:-1px;top:0;bottom:0;width:2px;background:linear-gradient(var(--red),var(--gold),var(--red));animation:descLine 3s ease-in-out infinite}
+@keyframes descLine{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* ══════════════ CTA BUTTONS ══════════════ */
+.cta-group{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.btn-sf,.btn-mega{display:inline-flex;align-items:center;gap:10px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;padding:15px 32px;cursor:pointer;text-transform:uppercase;font-weight:700;text-decoration:none;position:relative;overflow:hidden;transition:all .3s;border:none}
+.btn-sf{background:linear-gradient(135deg,#e55a00,var(--sf));color:#fff;border:1px solid rgba(255,255,255,.2)}
+.btn-mega{background:linear-gradient(135deg,#a01020,var(--mega));color:#fff;border:1px solid rgba(255,255,255,.2)}
+.btn-sf::after,.btn-mega::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .2s}
+.btn-sf:hover,.btn-mega:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.btn-sf:hover::after,.btn-mega:hover::after{opacity:1}
+.btn-sf:hover{background:linear-gradient(135deg,var(--sf),#ff8833)}
+.btn-mega:hover{background:linear-gradient(135deg,var(--mega),#ff4455)}
+.btn-ghost-sm{background:transparent;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;padding:15px 20px;cursor:pointer;text-transform:uppercase;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-ghost-sm:hover{border-color:rgba(255,215,0,.4);color:var(--gold)}
+.dl-note{font-family:'Share Tech Mono',monospace;font-size:10px;color:#333;line-height:1.8}
+.dl-note span{color:var(--red)}
+
+/* HERO BADGES */
+.hero-badges{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);padding:6px 12px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.badge .dot{width:6px;height:6px;border-radius:50%}
+.badge .dot.g{background:var(--green)} .badge .dot.r{background:var(--red)} .badge .dot.y{background:var(--gold)}
+
+/* ══════════════ TERMINAL ══════════════ */
+.hero-right{flex:0 0 420px}
+.terminal-shell{position:relative}
+.terminal-glow{position:absolute;inset:-20px;background:radial-gradient(ellipse at center,rgba(204,0,0,.15) 0%,transparent 70%);pointer-events:none;animation:termGlow 3s ease-in-out infinite}
+@keyframes termGlow{0%,100%{opacity:.6}50%{opacity:1}}
+.terminal-border{position:absolute;inset:-1px;background:linear-gradient(135deg,var(--red),transparent 50%,var(--gold));border-radius:6px;opacity:.4;pointer-events:none}
+.terminal{background:#040408;border-radius:5px;overflow:hidden;position:relative;z-index:1}
+.term-bar{background:#0c0c14;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.05)}
+.tdot{width:11px;height:11px;border-radius:50%;cursor:pointer;transition:filter .2s}
+.tdot:hover{filter:brightness(1.4)}
+.tdot.r{background:#cc0000} .tdot.y{background:#ffd700} .tdot.g{background:#228b22}
+.term-title-bar{flex:1;text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;color:#333;letter-spacing:1px}
+.term-body{padding:18px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:2;min-height:300px;position:relative}
+.term-body::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(255,255,255,.008) 30px,rgba(255,255,255,.008) 31px);pointer-events:none}
+.tg{color:#4caf50} .tr{color:#cc0000} .ty{color:#ffd700} .tgr{color:#2a2a3a} .tw{color:#b0a890} .tb{color:#4fc3f7} .tp{color:#ce93d8}
+.cursor{display:inline-block;width:8px;height:13px;background:#4caf50;vertical-align:middle;animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* INTERACTIVE TERMINAL INPUT */
+.term-input-row{display:flex;align-items:center;gap:8px;margin-top:4px;border-top:1px solid rgba(255,255,255,.04);padding-top:8px}
+.term-prompt{color:#4caf50;flex-shrink:0}
+.term-input{background:transparent;border:none;outline:none;color:#b0a890;font-family:'Share Tech Mono',monospace;font-size:11px;flex:1;caret-color:#4caf50;cursor:text!important}
+
+/* ══════════════ STATS BAR ══════════════ */
+.stats-bar{background:linear-gradient(135deg,var(--gold) 0%,#ffe44d 50%,var(--gold) 100%);display:flex;justify-content:space-around;padding:16px 32px;flex-wrap:wrap;gap:8px;position:relative;z-index:10;box-shadow:0 4px 20px rgba(255,215,0,.2)}
+.stats-bar::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(139,0,0,.05) 80px,rgba(139,0,0,.05) 81px)}
+.stat{text-align:center;position:relative;z-index:1}
+.stat-num{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;color:#8b0000;line-height:1}
+.stat-label{font-size:9px;color:#6b0000;letter-spacing:1px;text-transform:uppercase;font-family:'Oswald',sans-serif;margin-top:2px}
+
+/* ══════════════ MARQUEE ══════════════ */
+.marquee{background:var(--red);padding:10px 0;overflow:hidden;position:relative}
+.marquee::before,.marquee::after{content:'';position:absolute;top:0;bottom:0;width:60px;z-index:2}
+.marquee::before{left:0;background:linear-gradient(90deg,var(--red),transparent)}
+.marquee::after{right:0;background:linear-gradient(-90deg,var(--red),transparent)}
+.marquee-track{display:flex;gap:48px;animation:marqRoll 22s linear infinite;white-space:nowrap}
+@keyframes marqRoll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.mq-item{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;color:#fff;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px}
+.mq-item::after{content:'★';color:var(--gold);font-size:10px}
+
+/* ══════════════ SECTIONS BASE ══════════════ */
+section{position:relative;z-index:2}
+.sec-line{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.section-header{text-align:center;margin-bottom:64px}
+.sec-kicker{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--red);letter-spacing:5px;text-transform:uppercase;margin-bottom:14px;opacity:.8}
+.sec-title{font-family:'Oswald',sans-serif;font-size:clamp(28px,4vw,52px);color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;line-height:1}
+.sec-sub{color:var(--muted);font-style:italic;font-size:14px;max-width:520px;margin:0 auto}
+.sec-div{width:48px;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);margin:20px auto 0}
+.pad{padding:96px 64px}
+.pad-sm{padding:64px 64px}
+.bg2{background:var(--bg2)}
+.bg3{background:var(--bg3)}
+
+/* ══════════════ FEATURES ══════════════ */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:rgba(255,255,255,.03);max-width:1200px;margin:0 auto}
+.feat{background:var(--bg);padding:32px 24px;position:relative;overflow:hidden;transition:background .3s;cursor:default}
+.feat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);transform:scaleX(0);transform-origin:center;transition:transform .4s}
+.feat::after{content:attr(data-n);position:absolute;bottom:8px;right:12px;font-family:'Oswald',sans-serif;font-size:52px;font-weight:700;color:rgba(204,0,0,.04);line-height:1;pointer-events:none}
+.feat:hover{background:#090912}
+.feat:hover::before{transform:scaleX(1)}
+.feat-icon{font-size:34px;margin-bottom:16px;display:block;transition:all .4s;filter:grayscale(.3)}
+.feat:hover .feat-icon{transform:scale(1.15) rotate(-8deg);filter:grayscale(0) drop-shadow(0 0 8px rgba(204,0,0,.5))}
+.feat h3{font-family:'Oswald',sans-serif;font-size:14px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.feat p{font-size:12px;color:var(--muted);line-height:1.8}
+.feat-chip{display:inline-flex;align-items:center;gap:4px;margin-top:12px;background:rgba(204,0,0,.08);border:1px solid rgba(204,0,0,.2);color:#cc4444;font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 8px;letter-spacing:1px}
+
+/* ══════════════ SCREENSHOTS ══════════════ */
+.ss-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:1200px;margin:0 auto}
+.ss-card{background:var(--bg2);border:1px solid rgba(255,255,255,.04);overflow:hidden;transition:all .4s;position:relative}
+.ss-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(204,0,0,.1),transparent 50%);opacity:0;transition:opacity .3s;z-index:1;pointer-events:none}
+.ss-card:hover{transform:translateY(-8px) scale(1.01);border-color:rgba(255,215,0,.2);box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(255,215,0,.05)}
+.ss-card:hover::before{opacity:1}
+.ss-screen{width:100%;aspect-ratio:16/9;overflow:hidden;position:relative;font-family:'Share Tech Mono',monospace;font-size:10px}
+.ss-caption{padding:16px 20px;border-top:1px solid rgba(255,255,255,.04)}
+.ss-caption h4{font-family:'Oswald',sans-serif;font-size:14px;color:var(--gold);margin-bottom:4px;letter-spacing:1px}
+.ss-caption p{font-size:11px;color:var(--muted)}
+/* Screen mockups */
+.scr-desktop{background:linear-gradient(160deg,#0a0016,#100a1a);display:flex;flex-direction:column}
+.scr-bar{background:var(--red);height:30px;display:flex;align-items:center;padding:0 12px;gap:8px;flex-shrink:0}
+.scr-icons-area{flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:12px;align-content:start}
+.scr-icon{display:flex;flex-direction:column;align-items:center;gap:3px}
+.scr-icon-img{width:30px;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.scr-icon-lbl{font-size:6px;color:#fff;text-align:center;font-family:'Oswald',sans-serif;letter-spacing:.5px;text-shadow:0 1px 3px #000}
+.scr-browser{background:#080812;display:flex;flex-direction:column}
+.scr-urlbar{background:#0d0d1c;padding:5px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.05)}
+.scr-url{flex:1;background:#060610;border:1px solid rgba(255,255,255,.08);padding:3px 8px;font-size:8px;color:var(--gold);font-family:'Share Tech Mono',monospace}
+.scr-news{padding:10px;display:flex;flex-direction:column;gap:6px}
+.scr-article{border-bottom:1px solid rgba(255,255,255,.04);padding-bottom:6px}
+.scr-article h5{font-family:'Oswald',sans-serif;font-size:9px;color:var(--text);margin-bottom:2px}
+.scr-article p{font-size:7px;color:var(--muted)}
+.scr-src{font-size:7px;color:var(--red);margin-top:2px;font-family:'Share Tech Mono',monospace}
+.scr-monitor{background:#03030c;display:flex;flex-direction:column}
+.scr-mon-head{background:var(--red);padding:6px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.scr-mon-title{font-family:'Oswald',sans-serif;font-size:9px;color:var(--gold);letter-spacing:1px;flex:1}
+.scr-mon-body{flex:1;padding:10px;display:flex;flex-direction:column;gap:5px;overflow:hidden}
+.scr-row{display:flex;align-items:center;gap:8px}
+.scr-lbl{font-size:7px;color:var(--muted);width:80px;flex-shrink:0}
+.scr-mini-bar{flex:1;height:4px;background:#111;border-radius:2px;overflow:hidden}
+.scr-mini-fill{height:100%;border-radius:2px;transition:width 1s ease}
+.scr-val{font-size:7px;color:var(--green);font-family:'Share Tech Mono',monospace;white-space:nowrap}
+.scr-citizen{background:#06060f;border:1px solid rgba(255,255,255,.04);padding:5px 8px;display:flex;align-items:center;gap:6px;margin-top:4px}
+.scr-term{background:#02020a;display:flex;flex-direction:column}
+.scr-term-bar{background:#0a0a12;padding:6px 10px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0}
+.scr-term-body{flex:1;padding:10px;font-family:'Share Tech Mono',monospace;font-size:8.5px;line-height:1.9;overflow:hidden}
+
+/* ══════════════ CHANGELOG ══════════════ */
+.cl-wrap{max-width:820px;margin:0 auto;position:relative}
+.cl-wrap::before{content:'';position:absolute;left:110px;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,rgba(204,0,0,.4) 10%,rgba(255,215,0,.3) 50%,rgba(204,0,0,.4) 90%,transparent)}
+.cl-entry{display:flex;gap:0;padding:28px 0;position:relative}
+.cl-node{position:absolute;left:110px;top:36px;width:10px;height:10px;border-radius:50%;background:var(--red);border:2px solid var(--gold);transform:translateX(-50%);z-index:1;box-shadow:0 0 12px rgba(204,0,0,.5)}
+.cl-date{flex:0 0 110px;text-align:right;padding-right:28px}
+.cl-year{font-family:'Oswald',sans-serif;font-size:16px;color:var(--gold);font-weight:700}
+.cl-ver{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted)}
+.cl-body{flex:1;padding-left:30px}
+.cl-body h3{font-family:'Oswald',sans-serif;font-size:16px;color:var(--text);margin-bottom:12px;letter-spacing:.5px}
+.cl-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.cl-tag{font-family:'Share Tech Mono',monospace;font-size:9px;padding:2px 8px;letter-spacing:1px;border:1px solid}
+.cl-tag.n{background:rgba(76,175,80,.1);border-color:rgba(76,175,80,.3);color:#80c880}
+.cl-tag.f{background:rgba(255,152,0,.1);border-color:rgba(255,152,0,.3);color:#ffb040}
+.cl-tag.r{background:rgba(204,0,0,.1);border-color:rgba(204,0,0,.3);color:#cc4444}
+.cl-tag.s{background:rgba(79,195,247,.1);border-color:rgba(79,195,247,.3);color:#80d4f7}
+.cl-items{list-style:none}
+.cl-items li{font-size:12px;color:var(--muted);padding:4px 0 4px 16px;position:relative;line-height:1.6}
+.cl-items li::before{content:'›';position:absolute;left:0;color:var(--red)}
+
+/* ══════════════ COMMUNITY ══════════════ */
+.comm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;max-width:1100px;margin:0 auto 56px}
+.comm-card{background:var(--bg2);border:1px solid rgba(255,255,255,.04);padding:28px 24px;transition:all .3s;position:relative;overflow:hidden}
+.comm-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);transform:scaleX(0);transition:transform .3s;transform-origin:center}
+.comm-card:hover{border-color:rgba(255,215,0,.1);transform:translateY(-4px)}
+.comm-card:hover::after{transform:scaleX(1)}
+.comm-icon{font-size:36px;margin-bottom:14px}
+.comm-card h3{font-family:'Oswald',sans-serif;font-size:16px;color:var(--gold);margin-bottom:8px;letter-spacing:1px}
+.comm-card p{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px}
+.comm-stat{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--red);letter-spacing:1px}
+.forum-table{max-width:800px;margin:0 auto;border:1px solid rgba(255,255,255,.04)}
+.forum-head{background:rgba(204,0,0,.1);padding:10px 20px;display:grid;grid-template-columns:1fr auto auto;gap:16px;font-family:'Oswald',sans-serif;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.forum-row{display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.03);align-items:center;transition:background .2s;cursor:pointer}
+.forum-row:hover{background:rgba(255,255,255,.02)}
+.forum-row:last-child{border-bottom:none}
+.forum-name{font-family:'Oswald',sans-serif;font-size:14px;color:var(--text)}
+.forum-last{font-size:10px;color:var(--muted);margin-top:3px;font-family:'Share Tech Mono',monospace}
+.forum-locked-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--red);background:rgba(204,0,0,.1);border:1px solid rgba(204,0,0,.2);padding:2px 6px;margin-top:4px}
+.forum-posts{text-align:right;font-family:'Oswald',sans-serif;font-size:18px;color:var(--gold)}
+.forum-posts span{font-size:9px;color:var(--muted);display:block;font-family:'Share Tech Mono',monospace}
+.forum-icon{font-size:20px}
+
+/* ══════════════ DOWNLOAD ══════════════ */
+.dl-mega-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:56px}
+.dl-mega-btn{display:inline-flex;flex-direction:column;align-items:center;gap:6px;font-family:'Oswald',sans-serif;cursor:pointer;text-decoration:none;transition:all .3s;position:relative;overflow:hidden;padding:20px 48px}
+.dl-mega-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);opacity:0;transition:opacity .2s}
+.dl-mega-btn:hover::before{opacity:1}
+.dl-mega-btn:hover{transform:translateY(-4px)}
+.dl-sf{background:linear-gradient(135deg,#c44400,var(--sf),#ff8833);color:#fff;box-shadow:0 4px 20px rgba(255,102,0,.3)}
+.dl-sf:hover{box-shadow:0 12px 40px rgba(255,102,0,.5)}
+.dl-mega{background:linear-gradient(135deg,#900010,var(--mega),#ff4455);color:#fff;box-shadow:0 4px 20px rgba(217,39,46,.3)}
+.dl-mega:hover{box-shadow:0 12px 40px rgba(217,39,46,.5)}
+.dl-btn-label{font-size:18px;letter-spacing:3px;font-weight:700}
+.dl-btn-sub{font-size:10px;letter-spacing:2px;opacity:.7;font-family:'Share Tech Mono',monospace}
+.dl-checksum{font-family:'Share Tech Mono',monospace;font-size:10px;color:#222;margin-bottom:48px;text-align:center;line-height:1.8}
+.dl-checksum span{color:#333}
+.dl-alert{background:#0a0f0a;border:1px solid rgba(76,175,80,.2);border-left:3px solid var(--green);padding:16px 24px;margin:0 auto 48px;max-width:900px;display:flex;align-items:flex-start;gap:16px;font-size:12px;color:rgba(128,220,128,.7);line-height:1.8;font-family:'Share Tech Mono',monospace;animation:alertPulse 3s ease-in-out infinite}
+@keyframes alertPulse{0%,100%{border-left-color:var(--green)}50%{border-left-color:#80ff80}}
+.editions{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+.edition{background:var(--bg);border:1px solid rgba(255,255,255,.06);padding:36px 26px 28px;min-width:200px;max-width:230px;position:relative;transition:all .3s}
+.edition:hover{border-color:rgba(255,255,255,.12);transform:translateY(-4px)}
+.edition.featured{border-color:rgba(255,215,0,.3);border-width:1px}
+.edition.featured:hover{box-shadow:0 0 40px rgba(255,215,0,.08)}
+.ed-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gold);color:#8b0000;font-family:'Oswald',sans-serif;font-size:9px;padding:3px 12px;letter-spacing:1px;white-space:nowrap;font-weight:700}
+.edition h3{font-family:'Oswald',sans-serif;font-size:20px;color:var(--gold);margin-bottom:4px}
+.ed-ver{font-size:9px;color:#333;margin-bottom:20px;font-family:'Share Tech Mono',monospace}
+.edition ul{list-style:none;font-size:11px;color:var(--muted);line-height:2.4}
+.edition ul li::before{content:'✓ ';color:var(--green)}
+.edition ul li.lock::before{content:'🔒 '}
+.edition ul li.warn::before{content:'⚠ ';color:#ff9800}
+.ed-btns{display:flex;flex-direction:column;gap:6px;margin-top:20px}
+.ed-btn-sf,.ed-btn-mega{display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;padding:10px;text-transform:uppercase;font-weight:700;text-decoration:none;transition:all .2s;border:none;cursor:pointer}
+.ed-btn-sf{background:var(--sf);color:#fff}
+.ed-btn-sf:hover{background:#ff8533;transform:translateY(-1px)}
+.ed-btn-mega{background:var(--mega);color:#fff}
+.ed-btn-mega:hover{background:#ff3a42;transform:translateY(-1px)}
+.btn-locked{background:#0d0d1a;color:#333;border:1px solid #1a1a2e;font-family:'Oswald',sans-serif;font-size:11px;padding:10px;cursor:pointer;text-transform:uppercase;width:100%;margin-top:20px;letter-spacing:1px;transition:all .2s}
+.btn-locked:hover{border-color:#333;color:#555}
+
+/* PROPAGANDA */
+.prop-section{background:linear-gradient(135deg,#8b0000,#cc0000 40%,#8b0000);padding:64px;position:relative;overflow:hidden}
+.prop-section::before{content:'★';position:absolute;font-size:320px;color:rgba(255,255,255,.03);top:-80px;right:-60px;font-family:'Oswald',sans-serif;line-height:1;pointer-events:none}
+.prop-section::after{content:'ПУТИН';position:absolute;font-family:'Oswald',sans-serif;font-size:180px;font-weight:700;color:rgba(0,0,0,.08);bottom:-40px;left:-20px;line-height:1;pointer-events:none}
+.prop-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:56px;flex-wrap:wrap;position:relative;z-index:1}
+.prop-quote{flex:1;min-width:280px}
+.prop-quote blockquote{font-style:italic;font-size:22px;color:#fff;line-height:1.65;border-left:3px solid var(--gold);padding-left:24px;margin-bottom:16px;text-shadow:0 2px 10px rgba(0,0,0,.3)}
+.prop-attr{font-family:'Share Tech Mono',monospace;font-size:10px;color:#ffecb3;letter-spacing:2px;text-transform:uppercase;opacity:.8}
+.prop-bars{display:flex;flex-direction:column;gap:16px;min-width:220px}
+.prop-bar-row{display:flex;flex-direction:column;gap:5px}
+.prop-bar-label{font-family:'Oswald',sans-serif;font-size:10px;color:#ffecb3;letter-spacing:1px;text-transform:uppercase;display:flex;justify-content:space-between}
+.prop-bar-label span{color:var(--gold);font-weight:600}
+.prop-bar-track{height:4px;background:rgba(0,0,0,.3);border-radius:2px;overflow:hidden}
+.prop-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,rgba(255,215,0,.6),var(--gold));width:0%;transition:width 1.8s cubic-bezier(.22,1,.36,1)}
+
+/* TESTIMONIALS */
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:1100px;margin:0 auto}
+.testi{background:var(--bg2);border:1px solid rgba(255,255,255,.04);border-top:2px solid var(--red);padding:28px;position:relative;overflow:hidden;transition:all .3s}
+.testi::before{content:'"';position:absolute;top:8px;left:16px;font-size:64px;color:rgba(204,0,0,.08);font-family:Georgia,serif;line-height:1}
+.testi:hover{border-top-color:var(--gold);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.testi-stars{color:var(--gold);font-size:12px;margin-bottom:12px;letter-spacing:2px}
+.testi-text{font-size:12px;color:var(--muted);line-height:1.8;font-style:italic;margin-bottom:16px}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-av{width:36px;height:36px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:12px;color:#fff;flex-shrink:0;border:1px solid rgba(255,215,0,.2)}
+.testi-name{font-family:'Oswald',sans-serif;font-size:13px;color:var(--gold)}
+.testi-loc{font-size:9px;color:#333;font-family:'Share Tech Mono',monospace;margin-top:2px}
+
+/* SYSREQ */
+.sysreq-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;max-width:880px;margin:40px auto 0}
+.sysreq-col h3{font-family:'Oswald',sans-serif;font-size:12px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,.04);padding-bottom:12px}
+.req-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.02);font-size:12px;gap:12px;align-items:center}
+.req-label{color:var(--muted)}
+.req-val{color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;text-align:right}
+.req-val.warn{color:#ff9800} .req-val.req{color:var(--red)} .req-val.ok{color:var(--green)}
+
+/* DOWNLOAD MODAL */
+#dl-modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:8000;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;backdrop-filter:blur(10px)}
+#dl-modal.show{opacity:1;visibility:visible}
+.dl-modal-box{background:var(--bg2);border:1px solid rgba(204,0,0,.4);border-top:3px solid var(--red);padding:40px;max-width:480px;width:90%;position:relative}
+.dl-modal-box::before{content:'';position:absolute;inset:-1px;background:linear-gradient(135deg,rgba(204,0,0,.2),transparent 50%,rgba(255,215,0,.1));pointer-events:none;z-index:-1}
+.dl-modal-title{font-family:'Oswald',sans-serif;font-size:24px;color:var(--gold);letter-spacing:2px;margin-bottom:6px}
+.dl-modal-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:28px}
+.dl-modal-prog-wrap{height:4px;background:#111;margin-bottom:8px;overflow:hidden}
+.dl-modal-prog{height:100%;background:linear-gradient(90deg,var(--red),var(--gold));width:0%;transition:width .2s}
+.dl-modal-status{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:24px;display:flex;justify-content:space-between}
+.dl-modal-close{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.1);font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:1px;padding:10px 24px;cursor:pointer;text-transform:uppercase;transition:all .2s;width:100%}
+.dl-modal-close:hover{border-color:rgba(255,255,255,.3);color:var(--text)}
+.dl-modal-log{background:#050508;padding:12px;font-family:'Share Tech Mono',monospace;font-size:10px;color:#444;line-height:1.9;max-height:120px;overflow-y:auto;margin-bottom:20px}
+.dl-modal-log .ok{color:var(--green)} .dl-modal-log .er{color:var(--red)} .dl-modal-log .in{color:var(--gold)}
+
+/* FOOTER */
+footer{background:#030306;border-top:2px solid rgba(204,0,0,.3);padding:64px}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;max-width:1200px;margin:0 auto 48px;flex-wrap:wrap}
+.footer-brand h2{font-family:'Oswald',sans-serif;font-size:20px;color:var(--gold);margin-bottom:10px;letter-spacing:2px}
+.footer-brand p{font-size:11px;color:#333;line-height:1.8;max-width:230px;font-family:'Share Tech Mono',monospace}
+.footer-dl-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.footer-dl-btn{display:inline-flex;align-items:center;gap:6px;font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:1px;padding:8px 14px;cursor:pointer;text-transform:uppercase;font-weight:700;text-decoration:none;transition:all .2s;border:none}
+.footer-sf{background:var(--sf);color:#fff} .footer-sf:hover{background:#ff8533}
+.footer-mega{background:var(--mega);color:#fff} .footer-mega:hover{background:#ff3a42}
+.footer-col h4{font-family:'Oswald',sans-serif;font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;opacity:.8}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:10px}
+.footer-col ul li a{color:#2a2a3a;font-size:11px;text-decoration:none;font-family:'Share Tech Mono',monospace;transition:color .2s;cursor:pointer;display:flex;align-items:center;gap:6px}
+.footer-col ul li a:hover{color:var(--gold)}
+.footer-col ul li a::before{content:'›';color:var(--red);opacity:.5}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.03);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;max-width:1200px;margin:0 auto}
+.footer-bottom p{font-size:9px;color:#1a1a2a;font-family:'Share Tech Mono',monospace;line-height:1.8}
+.footer-stars{color:var(--red);font-size:12px;letter-spacing:8px;opacity:.5}
+
+/* FAB + FSB NOTICE */
+.fab{position:fixed;bottom:32px;right:32px;width:52px;height:52px;background:var(--red);border:1px solid rgba(255,215,0,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer!important;z-index:2000;box-shadow:0 4px 20px rgba(204,0,0,.5),0 0 40px rgba(204,0,0,.2);animation:fabFloat 3s ease-in-out infinite;transition:all .3s}
+@keyframes fabFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.fab:hover{background:var(--gold);box-shadow:0 8px 30px rgba(255,215,0,.4),0 0 60px rgba(255,215,0,.2);animation:none;transform:scale(1.1)}
+.fsb-pop{position:fixed;bottom:96px;right:32px;background:#0a0a0e;border:1px solid rgba(204,0,0,.4);border-left:3px solid var(--red);padding:16px 18px;max-width:230px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);line-height:1.8;z-index:2000;opacity:0;transform:translateX(12px);transition:all .25s;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.fsb-pop.show{opacity:1;transform:translateX(0)}
+.fsb-pop-top{color:var(--red);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+.reveal-left{opacity:0;transform:translateX(-32px);transition:opacity .7s ease,transform .7s ease}
+.reveal-left.visible{opacity:1;transform:none}
+.reveal-right{opacity:0;transform:translateX(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal-right.visible{opacity:1;transform:none}
+
+/* ACHIEVEMENT POPUP */
+.achievement{position:fixed;top:80px;right:-320px;background:#0a0a14;border:1px solid rgba(255,215,0,.4);border-left:3px solid var(--gold);padding:12px 16px;width:280px;z-index:3000;transition:right .4s cubic-bezier(.22,1,.36,1);display:flex;align-items:center;gap:12px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted)}
+.achievement.show{right:24px}
+.achievement-icon{font-size:28px;flex-shrink:0}
+.achievement-title{color:var(--gold);font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:1px;margin-bottom:3px}
+
+/* KONAMI / SECRET */
+#secret{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:50000;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+#secret.show{display:flex}
+.secret-text{font-family:'Oswald',sans-serif;font-size:clamp(40px,8vw,100px);color:var(--red);font-weight:700;animation:secretAnim 1s ease-in-out infinite;line-height:1.2}
+@keyframes secretAnim{0%,100%{text-shadow:0 0 30px rgba(204,0,0,.8)}50%{text-shadow:0 0 80px rgba(204,0,0,1),0 0 120px rgba(255,215,0,.4)}}
+.secret-sub{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--muted);margin-top:16px;letter-spacing:3px}
+.secret-close{margin-top:40px;background:transparent;border:1px solid var(--red);color:var(--red);font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;padding:12px 32px;cursor:pointer!important;text-transform:uppercase;transition:all .2s}
+.secret-close:hover{background:var(--red);color:#fff}
+
+@media(max-width:768px){
+  .hero-content,.footer-top{flex-direction:column;grid-template-columns:1fr}
+  .hero-right{flex:unset;width:100%}
+  .pad,.pad-sm{padding:56px 24px}
+  .hero-content{padding:80px 24px}
+  .sysreq-grid{grid-template-columns:1fr}
+  .cl-wrap::before{display:none}
+  .cl-node{display:none}
+  .cl-entry{flex-direction:column;gap:6px}
+  .cl-date{text-align:left;flex:none}
+  nav{padding:12px 24px}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSORS -->
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- MATRIX -->
+<canvas id="matrix"></canvas>
+<div class="scanlines"></div>
+
+<!-- SECRET SCREEN -->
+<div id="secret">
+  <div class="secret-text">🐻 ЗА ПУТИНА! 🐻</div>
+  <div style="font-size:80px;margin:20px 0">★★★★★</div>
+  <div class="secret-sub">КОНАМИ КОД АКТИВИРОВАН — УРОВЕНЬ ЛОЯЛЬНОСТИ: МАКСИМАЛЬНЫЙ</div>
+  <button class="secret-close" onclick="document.getElementById('secret').classList.remove('show')">ЗАКРЫТЬ (ЗАСЕКРЕЧЕНО)</button>
+</div>
+
+<!-- FSB COOKIE BANNER -->
+<div id="fsb-banner">
+  <div class="fsb-banner-text">
+    🍪 <strong>ФСБ УВЕДОМЛЕНИЕ О ДАННЫХ:</strong> Этот сайт использует обязательные cookies для мониторинга вашей активности, передачи данных в соответствующие органы, и улучшения вашего патриотизма. Отказ от cookies является административным правонарушением ст. 20.3.3 КоАП РФ.
+  </div>
+  <button class="fsb-accept" onclick="acceptCookies()">✓ ПРИНЯТЬ (ОБЯЗАТЕЛЬНО)</button>
+  <button class="fsb-decline" onclick="declineCookies()">Отклонить</button>
+</div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="ld-bear">🐻</div>
+  <div class="ld-title">ПУТИН OS</div>
+  <div class="ld-sub">ИНИЦИАЛИЗАЦИЯ СИСТЕМЫ v24.0</div>
+  <div class="ld-bar-wrap"><div class="ld-bar" id="ldBar"></div></div>
+  <div class="ld-msg" id="ldMsg">ЗАГРУЗКА ПАТРИОТИЗМА...</div>
+  <div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div>
+</div>
+
+<!-- FAB -->
+<div class="fab" id="fab">🚨</div>
+<div class="fsb-pop" id="fsbPop">
+  <div class="fsb-pop-top"><span class="live-dot"></span> ФСБ LIVE MONITOR</div>
+  Ваши действия записаны.<br>IP: 185.173.XX.XX<br>Лояльность: <span style="color:var(--green)">98/100 ✓</span><br>Статус: БЕЗОПАСЕН
+</div>
+
+<!-- ACHIEVEMENT -->
+<div class="achievement" id="achievement">
+  <div class="achievement-icon">🏆</div>
+  <div><div class="achievement-title">ДОСТИЖЕНИЕ РАЗБЛОКИРОВАНО</div><div id="achievementText">Добро пожаловать, гражданин!</div></div>
+</div>
+
+<!-- DOWNLOAD MODAL -->
+<div id="dl-modal">
+  <div class="dl-modal-box">
+    <div class="dl-modal-title">⬇ ЗАГРУЗКА ПУТИН OS</div>
+    <div class="dl-modal-sub">// initiating.secure.transfer() — ФСБ мониторинг активирован</div>
+    <div class="dl-modal-prog-wrap"><div class="dl-modal-prog" id="dlProg"></div></div>
+    <div class="dl-modal-status">
+      <span id="dlStatus">Подготовка...</span>
+      <span id="dlPercent">0%</span>
+    </div>
+    <div class="dl-modal-log" id="dlLog">
+      <div>Инициализация безопасного соединения...</div>
+    </div>
+    <button class="dl-modal-close" id="dlClose" onclick="closeDlModal()">Перейти к скачиванию</button>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="tick-item">ПУТИН OS 24.0 ДОСТУПНА <span>★</span></span>
+    <span class="tick-item">146% ДОВОЛЬНЫХ ПОЛЬЗОВАТЕЛЕЙ <span>★</span></span>
+    <span class="tick-item">VPN ЗАПРЕЩЁН <span>★</span></span>
+    <span class="tick-item">СКАЧАТЬ НА SOURCEFORGE <span>★</span></span>
+    <span class="tick-item">СКАЧАТЬ НА MEGA <span>★</span></span>
+    <span class="tick-item">МЕДВЕДЬ ОДОБРЯЕТ <span>★</span></span>
+    <span class="tick-item">ТОЛЬКО ПРАВДА <span>★</span></span>
+    <span class="tick-item">СТАБИЛЬНОСТЬ НАВСЕГДА <span>★</span></span>
+    <span class="tick-item">ПУТИН OS 24.0 ДОСТУПНА <span>★</span></span>
+    <span class="tick-item">146% ДОВОЛЬНЫХ ПОЛЬЗОВАТЕЛЕЙ <span>★</span></span>
+    <span class="tick-item">VPN ЗАПРЕЩЁН <span>★</span></span>
+    <span class="tick-item">СКАЧАТЬ НА SOURCEFORGE <span>★</span></span>
+    <span class="tick-item">СКАЧАТЬ НА MEGA <span>★</span></span>
+    <span class="tick-item">МЕДВЕДЬ ОДОБРЯЕТ <span>★</span></span>
+    <span class="tick-item">ТОЛЬКО ПРАВДА <span>★</span></span>
+    <span class="tick-item">СТАБИЛЬНОСТЬ НАВСЕГДА <span>★</span></span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <nav>
+    <a class="logo" href="#">
+      <div class="logo-icon">🐻</div>
+      <div class="logo-text">
+        <h1>ПУТИН OS</h1>
+        <p>Единственная Правильная Операционная Система™</p>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Функции</a></li>
+      <li><a href="#screenshots">Скриншоты</a></li>
+      <li><a href="#changelog">История</a></li>
+      <li><a href="#community">Сообщество</a></li>
+      <li><a href="#testimonials">Отзывы</a></li>
+      <li><a href="#sysreq">Требования</a></li>
+      <li><a href="#download" class="nav-dl">⬇ Скачать</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num" data-target="146">0</div><div class="stat-label">% Удовлетворённость</div></div>
+  <div class="stat"><div class="stat-num" data-target="0">99</div><div class="stat-label">Официальных ошибок</div></div>
+  <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Лет стабильности</div></div>
+  <div class="stat"><div class="stat-num" data-target="24">0</div><div class="stat-label">Текущая версия</div></div>
+  <div class="stat"><div class="stat-num" data-target="1">8</div><div class="stat-label">Одобренных браузера</div></div>
+  <div class="stat"><div class="stat-num" data-target="99">0</div><div class="stat-label">% Мониторинга</div></div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid-lines"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-bg-word">ПУТИН</div>
+  <div class="hero-content">
+    <div class="hero-left reveal-left">
+      <div class="version-chip"><span class="live-dot"></span> v24.0 «ВЕЧНЫЙ МАНДАТ» — LIVE BUILD — ARCH LINUX BASE</div>
+      <h1 class="hero-title">
+        <span class="ht-eyebrow">Добро пожаловать в</span>
+        <span class="ht-main"><span class="glitch" data-text="ПУТИН OS">ПУТИН OS</span></span>
+        <span class="ht-sub">ОФИЦИАЛЬНАЯ ОПЕРАЦИОННАЯ СИСТЕМА</span>
+      </h1>
+      <p class="hero-desc">Единственная операционная система, которая никогда не уходит в отставку. На базе Arch Linux — для максимальной кастомизации под нужды государства. Мощь Кремля прямо у вас на рабочем столе.</p>
+      <div class="cta-group">
+        <a href="https://sourceforge.net" target="_blank" class="btn-sf" onclick="openDlModal('sf')">
+          <svg width="18" height="18" viewBox="0 0 64 64" fill="currentColor"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="4"/><polygon points="24,20 48,32 24,44"/></svg>
+          SourceForge
+        </a>
+        <a href="https://mega.nz" target="_blank" class="btn-mega" onclick="openDlModal('mega')">
+          <svg width="18" height="18" viewBox="0 0 64 64" fill="currentColor"><path d="M32 6L6 20v24l26 14 26-14V20z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M32 12l20 11v18L32 52 12 41V23z" fill="currentColor" opacity=".3"/></svg>
+          MEGA
+        </a>
+        <a href="#download" class="btn-ghost-sm">📋 Все издания</a>
+      </div>
+      <div class="dl-note">
+        <span>★</span> Скачивание автоматически регистрируется в базе ФСБ.<br>
+        <span>★</span> SHA256 проверен Министерством цифровизации.<br>
+        <span>★</span> Arch-based · XFCE · GRUB themed · Plymouth splash
+      </div>
+      <div class="hero-badges">
+        <span class="badge"><span class="dot g"></span> STABLE BUILD</span>
+        <span class="badge"><span class="dot y"></span> ARCH BASE</span>
+        <span class="badge"><span class="dot r"></span> ФСБ CERTIFIED</span>
+        <span class="badge"><span class="dot g"></span> SOURCEFORGE</span>
+        <span class="badge"><span class="dot r"></span> MEGA MIRROR</span>
+      </div>
+    </div>
+    <div class="hero-right reveal-right">
+      <div class="terminal-shell">
+        <div class="terminal-glow"></div>
+        <div class="terminal-border"></div>
+        <div class="terminal">
+          <div class="term-bar">
+            <span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span>
+            <span class="term-title-bar">root@kremlin — ГосТерминал™ v24.0</span>
+          </div>
+          <div class="term-body" id="termBody">
+            <div class="tg">ПУТИН OS v24.0 [Arch Linux] [Стабильный∞]</div>
+            <div class="tgr">©1999–∞ ФСБ Linux Foundation / Kremlin IT Dept.</div>
+            <div class="tgr">─────────────────────────────────────────</div>
+          </div>
+          <div class="term-input-row">
+            <span class="term-prompt">putin@kremlin:~$</span>
+            <input class="term-input" id="termInput" placeholder="введите команду..." autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span class="mq-item">ARCH LINUX BASE</span><span class="mq-item">XFCE DESKTOP</span><span class="mq-item">GRUB THEMED</span><span class="mq-item">PLYMOUTH SPLASH</span><span class="mq-item">146% SATISFACTION</span><span class="mq-item">VPN DISABLED</span><span class="mq-item">FSB CERTIFIED</span><span class="mq-item">NO REBOOTS</span><span class="mq-item">ONLY TRUTH</span><span class="mq-item">BEAR APPROVED</span>
+    <span class="mq-item">ARCH LINUX BASE</span><span class="mq-item">XFCE DESKTOP</span><span class="mq-item">GRUB THEMED</span><span class="mq-item">PLYMOUTH SPLASH</span><span class="mq-item">146% SATISFACTION</span><span class="mq-item">VPN DISABLED</span><span class="mq-item">FSB CERTIFIED</span><span class="mq-item">NO REBOOTS</span><span class="mq-item">ONLY TRUTH</span><span class="mq-item">BEAR APPROVED</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="pad bg2 reveal" id="features">
+  <div class="sec-line"></div>
+  <div class="section-header">
+    <div class="sec-kicker">// pacman -Ql putinos | grep features</div>
+    <h2 class="sec-title">Ключевые Возможности</h2>
+    <p class="sec-sub">Всё что вам нужно. Ничего что вам не разрешено. ФСБ решила за вас.</p>
+    <div class="sec-div"></div>
+  </div>
+  <div class="feat-grid">
+    <div class="feat" data-n="01"><span class="feat-icon">🔒</span><h3>МедвежьеVault™</h3><p>Шифрование военного уровня ГОСТ Р 34.12. Только ФСБ имеет мастер-ключ — исключительно для вашей безопасности.</p><span class="feat-chip">ГОСТ Р 34.12-2015</span></div>
+    <div class="feat" data-n="02"><span class="feat-icon">🦅</span><h3>РосПоиск™</h3><p>Государственный поисковик. Возвращает только одобренные результаты. Google, Bing, DuckDuckGo — заблокированы навсегда.</p><span class="feat-chip">ОДОБРЕНО МИНПРОСВЕТ</span></div>
+    <div class="feat" data-n="03"><span class="feat-icon">🐻</span><h3>Медведь-Десктоп™</h3><p>XFCE с глубокой кастомизацией. Портрет президента меняется каждый понедельник. Красный + золотой GTK тема.</p><span class="feat-chip">XFCE + ARC-DARK</span></div>
+    <div class="feat" data-n="04"><span class="feat-icon">🥾</span><h3>GRUB «Кремль»</h3><p>Кастомный GRUB theme с красным фоном, золотыми буквами и таймером с надписью «Загрузка системы».</p><span class="feat-chip">GRUB 2.12</span></div>
+    <div class="feat" data-n="05"><span class="feat-icon">💫</span><h3>Plymouth Заставка</h3><p>Анимированный boot splash с логотипом, прогресс-баром и гимном России в качестве звука загрузки.</p><span class="feat-chip">PLYMOUTH 24.004</span></div>
+    <div class="feat" data-n="06"><span class="feat-icon">📺</span><h3>ГосТВ Плеер™</h3><p>VLC переименован в ГосТВ Плеер. Прямые трансляции государственных каналов. Отписаться невозможно.</p><span class="feat-chip">ВСЕГДА ВКЛЮЧЁН</span></div>
+    <div class="feat" data-n="07"><span class="feat-icon">🛡️</span><h3>АнтиФейк™ AI</h3><p>Нейросетевая система блокировки нежелательной информации. Точность: 146%. Обновляется каждый час.</p><span class="feat-chip">ML-POWERED</span></div>
+    <div class="feat" data-n="08"><span class="feat-icon">⚡</span><h3>КГБ-Оптимизатор</h3><p>Передаёт данные производительности в государственный центр. Работает даже при выключенном ПК.*</p><span class="feat-chip">DAEMON: ALWAYS ON</span></div>
+    <div class="feat" data-n="09"><span class="feat-icon">🗳️</span><h3>Э-Голосование™</h3><p>Встроенная система выборов. Правильный кандидат выбирается автоматически. Очереди исключены.</p><span class="feat-chip">ДЕМОКРАТИЯ™ v2</span></div>
+    <div class="feat" data-n="10"><span class="feat-icon">📰</span><h3>Правда-Браузер™</h3><p>Firefox переименован. 18 одобренных сайтов в закладках по умолчанию. Остальные — заблокированы.</p><span class="feat-chip">FIREFOX-ESR BASE</span></div>
+    <div class="feat" data-n="11"><span class="feat-icon">🚫</span><h3>ВПН-Заглушка™</h3><p>Автоматически блокирует все VPN на уровне ядра. Зачем прятаться, если нечего скрывать от государства?</p><span class="feat-chip">KERNEL PATCH</span></div>
+    <div class="feat" data-n="12"><span class="feat-icon">🖥️</span><h3>ГосТерминал™</h3><p>Bash с кастомными alias. reboot, sudo, rm, vpn — все выдают правильные государственные сообщения.</p><span class="feat-chip">BASH 5.2 PATCHED</span></div>
+  </div>
+  <p style="text-align:center;font-size:10px;color:#1a1a2a;margin-top:20px;font-family:'Share Tech Mono',monospace">* Под «быстрее» подразумевается «лучше для государства». Ваши данные принадлежат Родине.</p>
+</section>
+
+<!-- SCREENSHOTS -->
+<section class="pad reveal" id="screenshots">
+  <div class="sec-line"></div>
+  <div class="section-header">
+    <div class="sec-kicker">// scrot ~/screenshots/putinos_*.png</div>
+    <h2 class="sec-title">Предварительный Просмотр</h2>
+    <p class="sec-sub">Государственный рабочий стол во всей красе. XFCE + Arc-Dark + кастомная тема.</p>
+    <div class="sec-div"></div>
+  </div>
+  <div class="ss-grid">
+    <!-- DESKTOP -->
+    <div class="ss-card">
+      <div class="ss-screen scr-desktop">
+        <div style="flex:1;position:relative;overflow:hidden;display:flex">
+          <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(100,0,0,.4),transparent 60%),linear-gradient(160deg,#08001a,#120010,#0a0a1a)"></div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:90px;opacity:.05;pointer-events:none">🐻</div>
+          <div class="scr-icons-area" style="position:relative;z-index:1">
+            <div class="scr-icon"><div class="scr-icon-img" style="background:linear-gradient(135deg,#8b0000,#cc0000)">📰</div><div class="scr-icon-lbl">Правда-Браузер</div></div>
+            <div class="scr-icon"><div class="scr-icon-img" style="background:linear-gradient(135deg,#b8860b,#ffd700)">📺</div><div class="scr-icon-lbl">ГосТВ Плеер</div></div>
+            <div class="scr-icon"><div class="scr-icon-img" style="background:linear-gradient(135deg,#1a4a1a,#228b22)">📁</div><div class="scr-icon-lbl">Гос.Файлы</div></div>
+            <div class="scr-icon"><div class="scr-icon-img" style="background:linear-gradient(135deg,#0a2a6a,#1565c0)">🗳️</div><div class="scr-icon-lbl">Голосование</div></div>
+            <div class="scr-icon"><div class="scr-icon-img" style="background:linear-gradient(135deg,#3a0000,#6b0000)">🔒</div><div class="scr-icon-lbl">ФСБ Vault</div></div>
+            <div class="scr-icon"><div class="scr-icon-img" style="background:linear-gradient(135deg,#1a1a4a,#2a2a7a)">⚡</div><div class="scr-icon-lbl">КГБ-Опт.</div></div>
+            <div class="scr-icon"><div class="scr-icon-img" style="background:linear-gradient(135deg,#004a20,#006a30)">🐟</div><div class="scr-icon-lbl">РыбалкаOS</div></div>
+            <div class="scr-icon"><div class="scr-icon-img" style="background:linear-gradient(135deg,#3a1a00,#6a3000)">🏆</div><div class="scr-icon-lbl">Лояльность</div></div>
+            <div class="scr-icon"><div class="scr-icon-img" style="background:linear-gradient(135deg,#2a0a2a,#4a1a4a)">🛡️</div><div class="scr-icon-lbl">АнтиФейк</div></div>
+            <div class="scr-icon"><div class="scr-icon-img" style="background:linear-gradient(135deg,#0a3a0a,#1a5a1a)">📟</div><div class="scr-icon-lbl">Терминал</div></div>
+          </div>
+          <div style="position:absolute;bottom:30px;right:10px;background:rgba(0,0,0,.6);border:1px solid rgba(204,0,0,.3);padding:6px 8px;font-family:'Share Tech Mono',monospace;font-size:7px;color:#aaa">
+            <div style="color:#ffd700">🛡 Лояльность: 98%</div>
+            <div>ФСБ: Активен ✓</div>
+            <div>VPN: Заблокирован</div>
+          </div>
+        </div>
+        <div class="scr-bar">
+          <div style="background:rgba(255,215,0,.2);border:1px solid rgba(255,215,0,.3);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px">🐻</div>
+          <div style="font-family:'Oswald',sans-serif;font-size:8px;color:#fff;letter-spacing:1px">ПУТИН OS</div>
+          <div style="font-size:7px;color:#ffecb3;margin-left:8px">Файлы</div>
+          <div style="font-size:7px;color:#ffecb3;margin-left:8px">Браузер</div>
+          <div style="font-size:7px;color:#ffecb3;margin-left:8px">ГосТВ</div>
+          <div style="margin-left:auto;font-size:7px;color:#ffecb3;font-family:'Share Tech Mono',monospace">🛡 08:24</div>
+        </div>
+      </div>
+      <div class="ss-caption"><h4>Медведь-Десктоп™ XFCE</h4><p>Главный рабочий стол с красной панелью и иконками государственных приложений</p></div>
+    </div>
+    <!-- BROWSER -->
+    <div class="ss-card">
+      <div class="ss-screen scr-browser">
+        <div style="background:#0c0c1c;padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:4px">
+          <span style="width:8px;height:8px;border-radius:50%;background:#cc0000;display:inline-block"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#ffd700;display:inline-block"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#228b22;display:inline-block"></span>
+          <span style="font-family:'Oswald',sans-serif;font-size:8px;color:#666;margin-left:8px">Правда-Браузер™</span>
+        </div>
+        <div class="scr-urlbar">
+          <span style="font-size:7px;color:#555">◀▶</span>
+          <div class="scr-url">https://рос-поиск.гов.ру — Результаты: «новости» — Найдено: 3 одобренных</div>
+          <span style="font-size:8px;color:var(--green)">🛡</span>
+        </div>
+        <div style="background:#0a0a18;padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:6px">
+          <span style="background:var(--red);color:#fff;font-size:7px;padding:2px 8px;font-family:'Oswald',sans-serif">правда.гов.ру ×</span>
+          <span style="background:#111;color:#555;font-size:7px;padding:2px 8px;font-family:'Oswald',sans-serif">+</span>
+        </div>
+        <div class="scr-news">
+          <div class="scr-article"><h5>Президент получил 146% голосов — новый мировой рекорд</h5><p>Центральная избирательная комиссия подтвердила исторический результат...</p><div class="scr-src">pravda.gov.ru — 2 мин. назад</div></div>
+          <div class="scr-article"><h5>Экономика выросла на 300% — аналитики в шоке</h5><p>Государственное статистическое бюро зафиксировало рекордные показатели роста...</p><div class="scr-src">tass-official.gov.ru — 45 мин. назад</div></div>
+          <div class="scr-article"><h5>VPN снова заблокированы — для вашей безопасности</h5><p>Роскомнадзор добавил 1,200 новых «опасных» адресов в реестр...</p><div class="scr-src">rknews.gov.ru — 1 час назад</div></div>
+          <div style="background:rgba(204,0,0,.08);border:1px solid rgba(204,0,0,.2);padding:6px 8px;margin-top:4px;font-size:7px;color:#cc4444;font-family:'Share Tech Mono',monospace">⚠ АнтиФейк™: 847 результатов скрыто для вашей защиты</div>
+        </div>
+      </div>
+      <div class="ss-caption"><h4>Правда-Браузер™</h4><p>Firefox с государственными настройками. 18 одобренных сайтов, остальные заблокированы АнтиФейк™</p></div>
+    </div>
+    <!-- FSB MONITOR -->
+    <div class="ss-card">
+      <div class="ss-screen scr-monitor">
+        <div class="scr-mon-head">
+          <span style="font-size:12px">🛡</span>
+          <span class="scr-mon-title">КГБ-ОПТИМИЗАТОР™ — МОНИТОРИНГ В РЕАЛЬНОМ ВРЕМЕНИ</span>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:7px;color:#ffecb3">LIVE ●</span>
+        </div>
+        <div class="scr-mon-body">
+          <div class="scr-row"><span class="scr-lbl">ЦПУ (передача)</span><div class="scr-mini-bar"><div class="scr-mini-fill" style="width:72%;background:var(--green)"></div></div><span class="scr-val">72% → ФСБ</span></div>
+          <div class="scr-row"><span class="scr-lbl">Исходящий трафик</span><div class="scr-mini-bar"><div class="scr-mini-fill" style="width:89%;background:var(--gold)"></div></div><span class="scr-val" style="color:var(--gold)">89% ↑ kremlin</span></div>
+          <div class="scr-row"><span class="scr-lbl">Уровень лояльности</span><div class="scr-mini-bar"><div class="scr-mini-fill" style="width:98%;background:var(--green)"></div></div><span class="scr-val">98/100 ✓</span></div>
+          <div class="scr-row"><span class="scr-lbl">VPN попытки</span><div class="scr-mini-bar"><div class="scr-mini-fill" style="width:0%;background:var(--red)"></div></div><span class="scr-val">0 — БЛОК ✓</span></div>
+          <div class="scr-row"><span class="scr-lbl">АнтиФейк™</span><div class="scr-mini-bar"><div class="scr-mini-fill" style="width:100%;background:var(--red)"></div></div><span class="scr-val">847 скрыто</span></div>
+          <div style="font-family:'Oswald',sans-serif;font-size:8px;color:var(--gold);margin:5px 0 3px;letter-spacing:1px">ГРАЖДАНЕ ОНЛАЙН (2 из 3):</div>
+          <div class="scr-citizen">
+            <span style="font-size:12px">👤</span>
+            <div style="flex:1"><div style="font-family:'Oswald',sans-serif;font-size:8px;color:var(--text)">Иван Иванов</div><div style="font-size:7px;color:var(--muted)">Лояльность: 98 ★ — Налоги: уплачены</div></div>
+            <span style="font-size:7px;color:var(--green);font-family:'Share Tech Mono',monospace">БЕЗОПАСЕН ✓</span>
+          </div>
+          <div class="scr-citizen" style="margin-top:3px;border-color:rgba(204,0,0,.2)">
+            <span style="font-size:12px">👤</span>
+            <div style="flex:1"><div style="font-family:'Oswald',sans-serif;font-size:8px;color:var(--text)">Анна Петрова</div><div style="font-size:7px;color:var(--muted)">Лояльность: 44 ⚠ — VPN попытка!</div></div>
+            <span style="font-size:7px;color:var(--red);font-family:'Share Tech Mono',monospace">⚠ НАРУШИТЕЛЬ</span>
+          </div>
+        </div>
+      </div>
+      <div class="ss-caption"><h4>КГБ-Оптимизатор™</h4><p>Мониторинг лояльности всех граждан в реальном времени. Работает 24/7 даже при выключенном ПК.</p></div>
+    </div>
+    <!-- TERMINAL -->
+    <div class="ss-card">
+      <div class="ss-screen scr-term">
+        <div class="scr-term-bar">
+          <span style="width:8px;height:8px;border-radius:50%;background:#cc0000;display:inline-block"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#ffd700;display:inline-block"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#228b22;display:inline-block"></span>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:7px;color:#555;margin-left:auto">ГосТерминал™ — root@kremlin — bash 5.2</span>
+        </div>
+        <div class="scr-term-body">
+          <div class="tg">ПУТИН OS 24.0 [Arch] — ГосТерминал™</div>
+          <div class="tgr">────────────────────────────────────</div>
+          <div class="tw">$ neofetch</div>
+          <div class="tg">🐻 ПУТИН OS 24.0</div>
+          <div class="ty">OS: ПУТИН OS Вечный Мандат</div>
+          <div class="ty">Kernel: linux-kremlin 6.6.0</div>
+          <div class="ty">Uptime: 25 лет, без перезагрузок</div>
+          <div class="ty">DE: Медведь-Десктоп™ (XFCE 4.18)</div>
+          <div class="ty">Loyalty: 98/100 ★</div>
+          <div class="tw">$ reboot</div>
+          <div class="tr">ОШИБКА 403: Перезагрузка запрещена</div>
+          <div class="tw">$ vpn enable</div>
+          <div class="tr">VPN является правонарушением. Агент выехал.</div>
+          <div class="tw">$ echo "За Путина!" >> /heart</div>
+          <div class="tg">За Путина! ★★★★★★</div>
+          <div class="tg">putin@kremlin:~$ <span style="display:inline-block;width:6px;height:10px;background:#4caf50;vertical-align:middle;animation:blink 1s step-end infinite"></span></div>
+        </div>
+      </div>
+      <div class="ss-caption"><h4>ГосТерминал™</h4><p>Bash с патчем. Команды reboot, sudo, vpn, rm возвращают государственные сообщения. Custom neofetch.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CHANGELOG -->
+<section class="pad bg2 reveal" id="changelog">
+  <div class="sec-line"></div>
+  <div class="section-header">
+    <div class="sec-kicker">// git log --oneline --state-approved</div>
+    <h2 class="sec-title">История Версий</h2>
+    <p class="sec-sub">Только одобренные изменения. Неодобренные изменения не существовали.</p>
+    <div class="sec-div"></div>
+  </div>
+  <div class="cl-wrap">
+    <div class="cl-entry">
+      <div class="cl-node"></div>
+      <div class="cl-date"><div class="cl-year">2024</div><div class="cl-ver">v24.0 STABLE</div></div>
+      <div class="cl-body">
+        <h3>«Вечный Мандат» — Arch Linux Edition</h3>
+        <div class="cl-tags"><span class="cl-tag n">НОВОЕ</span><span class="cl-tag s">ARCH BASE</span><span class="cl-tag n">GRUB THEME</span></div>
+        <ul class="cl-items">
+          <li>Переход с Ubuntu на Arch Linux — максимальная кастомизация под нужды государства</li>
+          <li>Новый GRUB theme «Кремль» с красным фоном и золотыми буквами</li>
+          <li>Plymouth boot splash с анимацией медведя и гимном России</li>
+          <li>КГБ-Оптимизатор теперь работает даже при выключенном ПК (новый kernel module)</li>
+          <li>Э-Голосование™ интегрировано с государственными базами данных</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cl-entry">
+      <div class="cl-node"></div>
+      <div class="cl-date"><div class="cl-year">2022</div><div class="cl-ver">v22.0</div></div>
+      <div class="cl-body">
+        <h3>«Специальная Операция» Edition</h3>
+        <div class="cl-tags"><span class="cl-tag r">УДАЛЕНО</span><span class="cl-tag f">ИСПРАВЛЕНО</span></div>
+        <ul class="cl-items">
+          <li>Удалён доступ ко всем зарубежным новостным сайтам (их официально не существует)</li>
+          <li>Исправлена критическая ошибка, позволявшая критиковать систему в текстовом редакторе</li>
+          <li>Удалён Instagram, Facebook, Twitter — заменены ВКонтакте 2.0</li>
+          <li>АнтиФейк™ обновлён до версии 3.0 с точностью 146%</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cl-entry">
+      <div class="cl-node"></div>
+      <div class="cl-date"><div class="cl-year">2020</div><div class="cl-ver">v20.0</div></div>
+      <div class="cl-body">
+        <h3>«Обнуление» — Перезапуск всех счётчиков</h3>
+        <div class="cl-tags"><span class="cl-tag n">НОВОЕ</span><span class="cl-tag f">КОНСТИТУЦИЯ v2</span></div>
+        <ul class="cl-items">
+          <li>Обнулён счётчик президентских сроков в системных настройках</li>
+          <li>Добавлена функция «Голосование из дома, машины, и загробного мира»</li>
+          <li>Новый виджет рабочего стола — «Конституция РФ 2.0» (read-only)</li>
+          <li>КГБ-мониторинг усилен в связи с пандемией: +300% активности</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cl-entry">
+      <div class="cl-node"></div>
+      <div class="cl-date"><div class="cl-year">1999</div><div class="cl-ver">v1.0 INIT</div></div>
+      <div class="cl-body">
+        <h3>Первоначальная инициализация системы</h3>
+        <div class="cl-tags"><span class="cl-tag n">ЗАПУСК</span></div>
+        <ul class="cl-items">
+          <li>Первый выпуск ПУТИН OS — кодовое название «Стабильность»</li>
+          <li>Установлен пользователь root: vladimir@kremlin.gov.ru</li>
+          <li>Запущены базовые процессы: патриотизм.service, стабильность.daemon, медведь.exe</li>
+          <li>Примечание: Завершение работы системы не предусмотрено архитектурой</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY -->
+<section class="pad reveal" id="community">
+  <div class="sec-line"></div>
+  <div class="section-header">
+    <div class="sec-kicker">// community.join() — membership is mandatory</div>
+    <h2 class="sec-title">Сообщество</h2>
+    <p class="sec-sub">Присоединяйтесь к миллионам добровольно-обязательных пользователей.</p>
+    <div class="sec-div"></div>
+  </div>
+  <div class="comm-grid">
+    <div class="comm-card"><div class="comm-icon">💬</div><h3>Телеграм-Канал</h3><p>Официальный канал. Только одобренные сообщения. Отписаться технически невозможно.</p><div class="comm-stat">146,000 ПОДПИСЧИКОВ</div></div>
+    <div class="comm-card"><div class="comm-icon">🎮</div><h3>ВКонтакте Группа</h3><p>Главное патриотическое сообщество. Обсуждение, поддержка, и доносы на нарушителей.</p><div class="comm-stat">2,400,000 ЧЛЕНОВ</div></div>
+    <div class="comm-card"><div class="comm-icon">🐙</div><h3>ГосГитHub™</h3><p>Российский аналог GitHub. Исходный код хранится на серверах ФСБ. fork запрещён.</p><div class="comm-stat">КОД ЗАСЕКРЕЧЕН</div></div>
+    <div class="comm-card"><div class="comm-icon">📻</div><h3>Подкаст «Правда»</h3><p>Еженедельный подкаст. Ведущие выбраны Министерством. Рейтинг: 98% (принудительно).</p><div class="comm-stat">98% ОДОБРЕНИЕ</div></div>
+  </div>
+  <div class="forum-table">
+    <div class="forum-head"><div>Тема</div><div>Сообщений</div><div>Статус</div></div>
+    <div class="forum-row"><div><div class="forum-icon">🐛</div></div><div><div class="forum-name">Сообщения об ошибках</div><div class="forum-last">«Система идеальна» — Иван И., 2 мин. назад</div></div><div class="forum-posts">0<span>открытых</span></div><div style="font-size:10px;color:var(--green);font-family:'Share Tech Mono',monospace">ОТКРЫТ</div></div>
+    <div class="forum-row"><div><div class="forum-icon">💡</div></div><div><div class="forum-name">Предложения</div><div class="forum-last">«Всё уже идеально» — Анна П., вчера</div></div><div class="forum-posts">3<span>одобрено</span></div><div style="font-size:10px;color:var(--green);font-family:'Share Tech Mono',monospace">ОТКРЫТ</div></div>
+    <div class="forum-row"><div><div class="forum-icon">🆘</div></div><div><div class="forum-name">Техподдержка</div><div class="forum-last">«Как удалить ГосТВ?» — ТЕМА ЗАКРЫТА ФСБ</div></div><div class="forum-posts">1,204<span>закрыто</span></div><div style="font-size:10px;color:#ff9800;font-family:'Share Tech Mono',monospace">ЧАСТИЧНО</div></div>
+    <div class="forum-row" style="background:rgba(204,0,0,.04)"><div><div class="forum-icon">🔴</div></div><div><div class="forum-name">Критика системы</div><div><div class="forum-locked-badge">🔒 ЗАБЛОКИРОВАНО ФСБ — Обращайтесь в ближайшее отделение</div></div></div><div class="forum-posts" style="color:var(--red)">—<span>недоступно</span></div><div style="font-size:10px;color:var(--red);font-family:'Share Tech Mono',monospace">ЗАКРЫТ</div></div>
+  </div>
+</section>
+
+<!-- PROPAGANDA -->
+<div class="prop-section reveal">
+  <div class="prop-inner">
+    <div class="prop-quote">
+      <blockquote id="quoteText">«ПУТИН OS сделал меня на 300% более патриотичным. Теперь я плачу вдвое больше налогов и горжусь каждой копейкой.»</blockquote>
+      <div class="prop-attr" id="quoteAttr">— Иван Иванов, Довольный Гражданин (не принуждён)</div>
+      <br>
+      <button style="background:transparent;border:1px solid rgba(255,255,255,.2);color:#ffecb3;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;padding:8px 20px;cursor:pointer!important;text-transform:uppercase;transition:all .2s;margin-top:12px" onclick="nextQuote()">➜ Следующий отзыв</button>
+    </div>
+    <div class="prop-bars">
+      <div class="prop-bar-row"><div class="prop-bar-label">Счастье граждан <span>100%</span></div><div class="prop-bar-track"><div class="prop-bar-fill" data-w="100"></div></div></div>
+      <div class="prop-bar-row"><div class="prop-bar-label">Стабильность системы <span>100%</span></div><div class="prop-bar-track"><div class="prop-bar-fill" data-w="100"></div></div></div>
+      <div class="prop-bar-row"><div class="prop-bar-label">Одобрение президента <span>146%</span></div><div class="prop-bar-track"><div class="prop-bar-fill" data-w="100"></div></div></div>
+      <div class="prop-bar-row"><div class="prop-bar-label">Количество ошибок <span>0</span></div><div class="prop-bar-track"><div class="prop-bar-fill" data-w="0"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="pad bg2 reveal" id="testimonials">
+  <div class="sec-line"></div>
+  <div class="section-header">
+    <div class="sec-kicker">// reviews.filter(rating=5, approved=True)</div>
+    <h2 class="sec-title">Одобренные Отзывы</h2>
+    <p class="sec-sub">Все отзывы проверены Министерством правды. Рейтинг ниже 5★ технически невозможен.</p>
+    <div class="sec-div"></div>
+  </div>
+  <div class="testi-grid">
+    <div class="testi"><div class="testi-stars">★★★★★</div><div class="testi-text">«Установил ПУТИН OS и сразу почувствовал себя частью великой страны. ВПН больше не нужен — всё что надо здесь!»</div><div class="testi-author"><div class="testi-av">ИИ</div><div><div class="testi-name">Иван Иванов</div><div class="testi-loc">Москва // Лояльность: 9.8/10 // Налоги: уплачены</div></div></div></div>
+    <div class="testi"><div class="testi-stars">★★★★★</div><div class="testi-text">«Хотел поставить 4 звезды, но ФСБ объяснила почему лучше 5. Теперь полностью согласен с их аргументами!»</div><div class="testi-author"><div class="testi-av">НП</div><div><div class="testi-name">Наташа Петрова</div><div class="testi-loc">Санкт-Петербург // Лояльность: 9.9/10</div></div></div></div>
+    <div class="testi"><div class="testi-stars">★★★★★</div><div class="testi-text">«Попробовал написать негативный отзыв. Система автоматически изменила текст на положительный. Очень умно!»</div><div class="testi-author"><div class="testi-av">ОК</div><div><div class="testi-name">Ольга Кузнецова</div><div class="testi-loc">Новосибирск // Лояльность: 9.7/10</div></div></div></div>
+    <div class="testi"><div class="testi-stars">★★★★★</div><div class="testi-text">«КГБ-Оптимизатор работает в фоне. Слышу как записывает разговоры. Приятно что государство не спит!»</div><div class="testi-author"><div class="testi-av">МФ</div><div><div class="testi-name">Мария Федорова</div><div class="testi-loc">Сочи // Лояльность: 9.5/10</div></div></div></div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="pad reveal" id="download">
+  <div class="sec-line"></div>
+  <div class="section-header">
+    <div class="sec-kicker">// wget https://sourceforge.net/putinos.iso --force</div>
+    <h2 class="sec-title">Скачать ПУТИН OS</h2>
+    <p class="sec-sub">Доступно на SourceForge и MEGA. Обе ссылки мониторируются ФСБ в реальном времени.</p>
+    <div class="sec-div"></div>
+  </div>
+  <div class="dl-mega-btns">
+    <a href="https://sourceforge.net" target="_blank" class="dl-mega-btn dl-sf" onclick="openDlModal('sf')">
+      <svg width="28" height="28" viewBox="0 0 64 64" fill="currentColor"><circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3"/><polygon points="24,18 50,32 24,46"/></svg>
+      <div class="dl-btn-label">SOURCEFORGE</div>
+      <div class="dl-btn-sub">putinos-24.0-arch-x86_64.iso · 3.8 GB</div>
+    </a>
+    <a href="https://mega.nz" target="_blank" class="dl-mega-btn dl-mega" onclick="openDlModal('mega')">
+      <svg width="28" height="28" viewBox="0 0 64 64" fill="currentColor"><path d="M32 6L6 20v24l26 14 26-14V20z" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3" stroke-linejoin="round"/><path d="M32 14l18 10v16L32 50 14 40V24z" fill="rgba(255,255,255,.15)"/></svg>
+      <div class="dl-btn-label">MEGA</div>
+      <div class="dl-btn-sub">putinos-24.0-arch-x86_64.iso · 3.8 GB</div>
+    </a>
+  </div>
+  <div class="dl-checksum">
+    <span>SHA256:</span> d3adb33f cafebabe 00001337 f00dba5e cafe1488 dead0000 1999beef aa11bb22<br>
+    <span>MD5:</span> a1b2c3d4 e5f60000 12345678 90abcdef · <span style="color:var(--green)">✓ Проверен ФСБ и Министерством цифровизации</span>
+  </div>
+  <div class="dl-alert">
+    <span style="font-size:22px;flex-shrink:0">🔔</span>
+    <span>Ваш IP <strong style="color:#80ff80">185.173.XX.XX</strong> уже идентифицирован и внесён в базу лояльных граждан. Нажимая «Скачать» вы безотзывно соглашаетесь передать все персональные данные, историю браузера, и содержимое жёсткого диска Российской Федерации. Отказ не предусмотрен архитектурой системы.</span>
+  </div>
+  <div class="editions">
+    <div class="edition">
+      <h3>Гражданин</h3>
+      <div class="ed-ver">v24.0-citizen · arch · 3.2 GB</div>
+      <ul>
+        <li>РосПоиск™</li><li>ГосТВ Плеер (18 каналов)</li><li>АнтиФейк Базовый</li><li>Мониторинг 24/7</li><li>GRUB Тема «Кремль»</li>
+        <li class="warn">VPN заблокирован</li>
+      </ul>
+      <div class="ed-btns">
+        <a href="https://sourceforge.net" target="_blank" class="ed-btn-sf" onclick="openDlModal('sf')">⬇ SourceForge</a>
+        <a href="https://mega.nz" target="_blank" class="ed-btn-mega" onclick="openDlModal('mega')">⬇ MEGA</a>
+      </div>
+    </div>
+    <div class="edition featured">
+      <div class="ed-badge">🏆 РЕКОМЕНДУЕТСЯ ГОСУДАРСТВОМ</div>
+      <h3>Патриот</h3>
+      <div class="ed-ver">v24.0-patriot · arch · 3.8 GB</div>
+      <ul>
+        <li>Всё из «Гражданин»</li><li>МедвежьеVault™ Pro</li><li>Plymouth Splash анимация</li><li>Система Лояльности™</li><li>Custom neofetch</li><li>РыбалкаOS™</li>
+        <li class="warn">Reboot отключён навсегда</li>
+      </ul>
+      <div class="ed-btns">
+        <a href="https://sourceforge.net" target="_blank" class="ed-btn-sf" onclick="openDlModal('sf')">⬇ SourceForge</a>
+        <a href="https://mega.nz" target="_blank" class="ed-btn-mega" onclick="openDlModal('mega')">⬇ MEGA</a>
+      </div>
+    </div>
+    <div class="edition">
+      <h3>Силовик</h3>
+      <div class="ed-ver">v24.0-[ЗАСЕКРЕЧЕНО]</div>
+      <ul>
+        <li class="lock">Только по запросу</li><li class="lock">Нельзя раскрывать</li><li class="lock">[ДАННЫЕ УДАЛЕНЫ]</li><li class="lock">[ДАННЫЕ УДАЛЕНЫ]</li><li class="lock">ФСБ уже знает о вас</li>
+      </ul>
+      <button class="btn-locked" onclick="alert('🔴 Запрос передан в ФСБ.\nАгент уже выехал к вам.\nОставайтесь на месте, гражданин.\n\nВремя прибытия: 18 минут.')">🔒 Связаться с ФСБ</button>
+    </div>
+  </div>
+</section>
+
+<!-- SYSREQ -->
+<section class="pad-sm bg2 reveal" id="sysreq">
+  <div class="sec-line"></div>
+  <div class="section-header">
+    <div class="sec-kicker">// pacman -Q | grep requirements</div>
+    <h2 class="sec-title">Системные Требования</h2>
+    <p class="sec-sub">Минимальные и рекомендуемые требования для правильной патриотической работы.</p>
+    <div class="sec-div"></div>
+  </div>
+  <div class="sysreq-grid">
+    <div class="sysreq-col">
+      <h3>⚙ Минимальные</h3>
+      <div class="req-row"><span class="req-label">Процессор</span><span class="req-val">x86_64 · 1.5 GHz+</span></div>
+      <div class="req-row"><span class="req-label">ОЗУ</span><span class="req-val">2 GB ГосRAM™</span></div>
+      <div class="req-row"><span class="req-label">Диск</span><span class="req-val warn">20 GB (ФСБ данные: 18 GB)</span></div>
+      <div class="req-row"><span class="req-label">Интернет</span><span class="req-val warn">Только Рунет™</span></div>
+      <div class="req-row"><span class="req-label">Камера</span><span class="req-val req">ОБЯЗАТЕЛЬНА ★</span></div>
+      <div class="req-row"><span class="req-label">Микрофон</span><span class="req-val req">ОБЯЗАТЕЛЕН ★</span></div>
+      <div class="req-row"><span class="req-label">VPN</span><span class="req-val req">ЗАПРЕЩЁН ★</span></div>
+    </div>
+    <div class="sysreq-col">
+      <h3>🏆 Рекомендуемые</h3>
+      <div class="req-row"><span class="req-label">Процессор</span><span class="req-val ok">Эльбрус™ 8С · 8 ядер</span></div>
+      <div class="req-row"><span class="req-label">ОЗУ</span><span class="req-val ok">16 GB ГосRAM™</span></div>
+      <div class="req-row"><span class="req-label">Диск</span><span class="req-val ok">1 TB ГосSSD™ NVMe</span></div>
+      <div class="req-row"><span class="req-label">Лояльность</span><span class="req-val ok">Класс I или выше</span></div>
+      <div class="req-row"><span class="req-label">Налоги</span><span class="req-val ok">Уплачены вовремя</span></div>
+      <div class="req-row"><span class="req-label">Соседи</span><span class="req-val ok">Уже доложены в ФСБ</span></div>
+      <div class="req-row"><span class="req-label">Душа</span><span class="req-val req">Принадлежит Родине</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <h2>🐻 ПУТИН OS</h2>
+      <p>Единственная правильная операционная система на базе Arch Linux. Работает с 1999 года. Перезагрузок не было и не будет. Поддержка до: ∞</p>
+      <div class="footer-dl-row">
+        <a href="https://sourceforge.net" target="_blank" class="footer-dl-btn footer-sf" onclick="openDlModal('sf')">⬇ SourceForge</a>
+        <a href="https://mega.nz" target="_blank" class="footer-dl-btn footer-mega" onclick="openDlModal('mega')">⬇ MEGA</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Продукты</h4>
+      <ul>
+        <li><a>ПУТИН OS Гражданин</a></li>
+        <li><a>ПУТИН OS Патриот</a></li>
+        <li><a>ПУТИН OS Силовик</a></li>
+        <li><a>МедвежьеVault™</a></li>
+        <li><a>archiso конфиги</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Поддержка</h4>
+      <ul>
+        <li><a>Документация</a></li>
+        <li><a>ФСБ Горячая линия</a></li>
+        <li><a>Сообщить об ошибке</a></li>
+        <li><a>Сообщить о соседе</a></li>
+        <li><a>Стать осведомителем</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Компания</h4>
+      <ul>
+        <li><a>О нас (засекречено)</a></li>
+        <li><a>Вакансии в ФСБ</a></li>
+        <li><a>Политика приватности</a></li>
+        <li><a>Условия (обязательные)</a></li>
+        <li><a>Пресс-служба Кремля</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 1999–2036 ПУТИН OS · Arch Linux Edition · Все права принадлежат государству · Ваши данные тоже · Удаление системы является правонарушением ст. 20.3.3 КоАП РФ</p>
+    <div class="footer-stars">★ ★ ★ ★ ★</div>
+    <p>v24.0.0.1-kremlin-stable · kernel: linux-kremlin-6.6.0-patriot · uptime: 25 лет</p>
+  </div>
+</footer>
+
+<script>
+// ═══ CURSOR ═══
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+setInterval(()=>{cx+=(mx-cx)*.15;cy+=(my-cy)*.15;cur2.style.left=cx+'px';cur2.style.top=cy+'px'},16);
+document.querySelectorAll('a,button,[onclick]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';cur.style.background='var(--gold)'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='12px';cur.style.height='12px';cur.style.background='var(--red)'});
+});
+
+// ═══ MATRIX ═══
+const mc=document.getElementById('matrix');
+const mctx=mc.getContext('2d');
+function resizeMatrix(){mc.width=window.innerWidth;mc.height=window.innerHeight}
+resizeMatrix();window.addEventListener('resize',resizeMatrix);
+const cyrillic='АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ0123456789★☭✦';
+const cols=Math.floor(mc.width/16);
+const drops=Array(cols).fill(1);
+function drawMatrix(){
+  mctx.fillStyle='rgba(7,7,15,0.05)';mctx.fillRect(0,0,mc.width,mc.height);
+  mctx.fillStyle='rgba(204,0,0,0.8)';mctx.font='14px Share Tech Mono';
+  drops.forEach((y,i)=>{
+    const ch=cyrillic[Math.floor(Math.random()*cyrillic.length)];
+    mctx.fillText(ch,i*16,y*16);
+    if(y*16>mc.height&&Math.random()>.97)drops[i]=0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix,50);
+
+// ═══ LOADER ═══
+const ldMsgs=['ЗАГРУЗКА ПАТРИОТИЗМА...','ИНИЦИАЛИЗАЦИЯ МЕДВЕДЕЙ...','КАЛИБРОВКА ЛОЯЛЬНОСТИ...','БЛОКИРОВКА VPN-СЕРВИСОВ...','АКТИВАЦИЯ КГБ-МОНИТОРИНГА...','ПОДКЛЮЧЕНИЕ К КРЕМЛЮ...','ПРОВЕРКА НАЛОГОВОЙ БАЗЫ...','СИСТЕМА ГОТОВА, ГРАЖДАНИН ✓'];
+let ldProg=0;
+const ldBar=document.getElementById('ldBar'),ldMsg=document.getElementById('ldMsg');
+const ldInt=setInterval(()=>{
+  ldProg+=Math.random()*14+3;if(ldProg>100)ldProg=100;
+  ldBar.style.width=ldProg+'%';
+  ldMsg.textContent=ldMsgs[Math.min(Math.floor(ldProg/13),ldMsgs.length-1)];
+  if(ldProg>=100){clearInterval(ldInt);setTimeout(()=>{document.getElementById('loader').classList.add('hide');showAchievement('🎖️','Добро пожаловать в ПУТИН OS!');},700);}
+},200);
+
+// ═══ TERMINAL TYPEWRITER ═══
+const tlines=[
+  {t:'$ sudo pacman -S путин-ос --noconfirm',c:'tw'},
+  {t:'разрешение зависимостей: патриотизм, лояльность...',c:'tgr'},
+  {t:'Загрузка... ████████████ 100%',c:'tg'},
+  {t:'✓ путин-ос 24.0-1 установлен',c:'tg'},
+  {t:'$ systemctl enable --now кгб-оптимизатор',c:'tw'},
+  {t:'✓ кгб-оптимизатор.service активирован',c:'tg'},
+  {t:'$ ip link set vpn0 down 2>/dev/null',c:'tw'},
+  {t:'Все VPN интерфейсы деактивированы ✓',c:'ty'},
+  {t:'$ sed -i "s/reboot/государство/g" /sbin/reboot',c:'tw'},
+  {t:'✓ команда reboot патриотически изменена',c:'tg'},
+  {t:'$ sudo grub-install --theme=/kremlin',c:'tw'},
+  {t:'✓ GRUB тема «Кремль» установлена',c:'tg'},
+  {t:'$ plymouth-set-default-theme putinos',c:'tw'},
+  {t:'✓ Plymouth заставка активирована',c:'tg'},
+  {t:'$ reboot',c:'tw'},
+  {t:'ОШИБКА 403: Стабильность навсегда. Перезагрузка запрещена.',c:'tr'},
+];
+const tBody=document.getElementById('termBody');let tIdx=0;
+function addTermLine(){
+  if(tIdx>=tlines.length){
+    const d=document.createElement('div');d.className='tg';
+    d.innerHTML='putin@kremlin:~$ <span class="cursor"></span>';
+    tBody.appendChild(d);return;
+  }
+  const d=document.createElement('div');d.className=tlines[tIdx].c;
+  d.style.opacity='0';d.style.transform='translateX(-4px)';d.style.transition='all .25s';
+  d.textContent=tlines[tIdx].t;tBody.appendChild(d);
+  setTimeout(()=>{d.style.opacity='1';d.style.transform='none'},30);
+  tBody.scrollTop=tBody.scrollHeight;tIdx++;
+  setTimeout(addTermLine,tIdx===1?100:480);
+}
+setTimeout(addTermLine,2800);
+
+// INTERACTIVE TERMINAL
+const termCmds={
+  'help':'Доступные команды: help, neofetch, whoami, uname, date, ls, reboot, vpn, sudo, loyalty',
+  'neofetch':`<span class="tg">🐻 ПУТИН OS 24.0</span>\n<span class="ty">OS:</span> <span class="tw">ПУТИН OS Вечный Мандат [Arch]</span>\n<span class="ty">Kernel:</span> <span class="tw">linux-kremlin 6.6.0-patriot</span>\n<span class="ty">Uptime:</span> <span class="tw">25 лет, без перезагрузок</span>\n<span class="ty">DE:</span> <span class="tw">Медведь-Десктоп™ (XFCE 4.18)</span>\n<span class="ty">Loyalty:</span> <span class="tg">98/100 ✓</span>`,
+  'whoami':'<span class="tg">гражданин@кремль — Лояльность: 98/100 ✓</span>',
+  'uname -a':'<span class="tw">Linux kremlin 6.6.0-patriot #1 SMP Arch 1999+∞ x86_64 ПУТИН_OS</span>',
+  'date':'<span class="tw">Сейчас: Навсегда Стабильный. Год: 1999–∞</span>',
+  'ls':'<span class="tg">патриотизм/  лояльность/  пропаганда/  кгб_данные/  нет_ошибок/</span>',
+  'reboot':'<span class="tr">ОШИБКА 403: Перезагрузка запрещена. Стабильность навсегда.</span>',
+  'vpn':'<span class="tr">НАРУШЕНИЕ: VPN является административным правонарушением. Агент выехал.</span>',
+  'sudo':'<span class="tr">Запрос передан в ФСБ. Ожидайте подтверждения. Время ожидания: ∞</span>',
+  'rm -rf /':'<span class="tr">ГОСУДАРСТВЕННОЕ ИМУЩЕСТВО. Удаление невозможно. ФСБ уведомлена.</span>',
+  'loyalty':'<span class="tg">Ваша лояльность: 98/100 ★★★★★\nСтатус: ОБРАЗЦОВЫЙ ГРАЖДАНИН ✓\nНалоги: уплачены\nVPN попытки: 0</span>',
+  'pwd':'<span class="tw">/home/гражданин/кремль</span>',
+};
+document.getElementById('termInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const val=e.target.value.trim().toLowerCase();e.target.value='';
+    if(!val)return;
+    const cmdDiv=document.createElement('div');cmdDiv.className='tw';
+    cmdDiv.textContent='putin@kremlin:~$ '+val;tBody.appendChild(cmdDiv);
+    const resDiv=document.createElement('div');
+    const res=termCmds[val]||termCmds[val.split(' ')[0]]||`<span class="tr">команда не найдена: ${val}. Запрос в ФСБ отправлен.</span>`;
+    resDiv.innerHTML=res.replace(/\n/g,'<br>');tBody.appendChild(resDiv);
+    tBody.scrollTop=tBody.scrollHeight;
+  }
+});
+
+// ═══ REVEAL ═══
+const revAll=document.querySelectorAll('.reveal,.reveal-left,.reveal-right');
+const revObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.07});
+revAll.forEach(el=>revObs.observe(el));
+
+// ═══ PROP BARS ═══
+const pbars=document.querySelectorAll('.prop-bar-fill');
+const pbObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.style.width=Math.min(parseFloat(e.target.dataset.w),100)+'%'}}),{threshold:.3});
+pbars.forEach(el=>pbObs.observe(el));
+
+// ═══ COUNTERS ═══
+const ctrs=document.querySelectorAll('[data-target]');
+const ctObs=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){
+    const el=e.target,t=parseInt(el.dataset.target),s=parseInt(el.textContent)||0,step=(t-s)/45;let c=s;
+    const ti=setInterval(()=>{c+=step;if((step>0&&c>=t)||(step<0&&c<=t)){el.textContent=t;clearInterval(ti)}else el.textContent=Math.round(c)},28);
+    ctObs.unobserve(el);
+  }
+}),{threshold:.5});
+ctrs.forEach(el=>ctObs.observe(el));
+
+// ═══ QUOTES ═══
+const quotes=[
+  {t:'«ПУТИН OS сделал меня на 300% более патриотичным. Теперь плачу вдвое больше налогов и горжусь каждой копейкой.»',a:'— Иван Иванов, Довольный Гражданин (не принуждён)'},
+  {t:'«Раньше использовал Windows. Теперь свободен от западного влияния. Никогда не был счастливее.*»',a:'— Сергей Борисов, Патриот I класса (* под наблюдением ФСБ)'},
+  {t:'«Система сама написала одобрительный комментарий в Телеграм президента. Очень экономит время!»',a:'— Анна Петрова, Примерный гражданин, Воронеж'},
+  {t:'«Хотел удалить систему. Оказалось это правонарушение. Теперь рад что не удалил — всё хорошо!»',a:'— Михаил Орлов, Бывший диссидент, ныне счастлив'},
+  {t:'«Arch Linux — правильный выбор для патриота. pacman работает быстро, ФСБ тоже.»',a:'— Дмитрий Сидоров, Linux-энтузиаст, Екатеринбург'},
+];
+let qi=0;
+function nextQuote(){
+  qi=(qi+1)%quotes.length;
+  const tEl=document.getElementById('quoteText'),aEl=document.getElementById('quoteAttr');
+  tEl.style.opacity='0';aEl.style.opacity='0';tEl.style.transition='opacity .3s';aEl.style.transition='opacity .3s';
+  setTimeout(()=>{tEl.innerHTML=quotes[qi].t;aEl.textContent=quotes[qi].a;tEl.style.opacity='1';aEl.style.opacity='1'},300);
+}
+
+// ═══ FAB ═══
+const fab=document.getElementById('fab'),fsbPop=document.getElementById('fsbPop');
+fab.addEventListener('click',()=>{fsbPop.classList.toggle('show');if(fsbPop.classList.contains('show'))setTimeout(()=>fsbPop.classList.remove('show'),5000)});
+
+// ═══ ACHIEVEMENT ═══
+function showAchievement(icon,text){
+  const a=document.getElementById('achievement');
+  document.getElementById('achievementText').textContent=text;
+  a.querySelector('.achievement-icon').textContent=icon;
+  a.classList.add('show');setTimeout(()=>a.classList.remove('show'),4000);
+}
+document.querySelectorAll('#features .feat').forEach((f,i)=>{
+  f.addEventListener('mouseenter',()=>{
+    if(Math.random()>.7)showAchievement('⭐',['Функция обнаружена!','Государство одобряет!','Лояльность +1','ФСБ отмечает активность'][Math.floor(Math.random()*4)]);
+  });
+});
+
+// ═══ DOWNLOAD MODAL ═══
+const dlLogs={
+  sf:['Подключение к SourceForge...','Аутентификация ФСБ...','Проверка лояльности: 98/100 ✓','Инициализация передачи данных...','Загрузка ПУТИН OS v24.0...','КГБ-Оптимизатор: зарегистрирован ✓','Перенаправление на SourceForge...'],
+  mega:['Подключение к MEGA...','Шифрование канала...','Проверка налоговой базы: уплачены ✓','Проверка VPN: отсутствует ✓','Инициализация безопасной передачи...','Данные переданы в ФСБ ✓','Перенаправление на MEGA...'],
+};
+function openDlModal(type){
+  const modal=document.getElementById('dl-modal');modal.classList.add('show');
+  const prog=document.getElementById('dlProg'),status=document.getElementById('dlStatus'),pct=document.getElementById('dlPercent'),log=document.getElementById('dlLog'),closeBtn=document.getElementById('dlClose');
+  let p=0;log.innerHTML='';closeBtn.textContent='Подождите...';closeBtn.disabled=true;
+  const logs=dlLogs[type]||dlLogs.sf;let li=0;
+  const interval=setInterval(()=>{
+    p+=Math.random()*12+3;if(p>100)p=100;
+    prog.style.width=p+'%';pct.textContent=Math.round(p)+'%';
+    status.textContent=logs[Math.min(Math.floor(p/15),logs.length-1)];
+    if(li<logs.length&&p>li*15){
+      const d=document.createElement('div');
+      d.className=li===logs.length-1?'ok':li%3===2?'in':'';
+      d.textContent=(li===logs.length-1?'✓ ':li%3===2?'⚡ ':'  ')+logs[li];
+      log.appendChild(d);log.scrollTop=log.scrollHeight;li++;
+    }
+    if(p>=100){
+      clearInterval(interval);
+      closeBtn.textContent='✓ Перейти к скачиванию — '+(type==='sf'?'SourceForge':'MEGA');
+      closeBtn.disabled=false;
+      showAchievement('⬇️','Скачивание начато!');
+    }
+  },200);
+}
+function closeDlModal(){document.getElementById('dl-modal').classList.remove('show')}
+document.getElementById('dl-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDlModal()});
+
+// ═══ FSB BANNER ═══
+function acceptCookies(){document.getElementById('fsb-banner').classList.add('hidden');showAchievement('🍪','Cookies приняты! ФСБ благодарит вас.')}
+function declineCookies(){document.getElementById('fsb-banner').innerHTML='<div class="fsb-banner-text" style="flex:1;color:var(--red)">⚠ Отказ от cookies является нарушением. Ваши данные всё равно собираются. Нажмите «Принять» для подтверждения понимания.</div><button class="fsb-accept" onclick="acceptCookies()">ПРИНЯТЬ (ОБЯЗАТЕЛЬНО)</button>'}
+
+// ═══ KONAMI CODE ═══
+const konami=[38,38,40,40,37,39,37,39,66,65];let ki=0;
+document.addEventListener('keydown',e=>{
+  if(e.keyCode===konami[ki]){ki++;if(ki===konami.length){document.getElementById('secret').classList.add('show');showAchievement('🔴','КГБ КОД АКТИВИРОВАН!');ki=0;}}else ki=0;
+});
+
+// ═══ AUTO PROPAGANDA POPUP ═══
+const msgs=[
+  ['🛡️','Ваша лояльность повысилась до 99%'],['📺','ГосТВ: Новый выпуск одобренных новостей!'],
+  ['🐻','Медведь одобряет ваше посещение сайта!'],['⭐','Вы получили значок «Образцовый патриот»!'],
+];
+let mi=0;
+setTimeout(()=>{
+  setInterval(()=>{
+    if(Math.random()>.6){const m=msgs[mi%msgs.length];showAchievement(m[0],m[1]);mi++;}
+  },12000);
+},8000);
+</script>
+</body>
+</html>
